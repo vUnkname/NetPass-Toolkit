@@ -1,4 +1,4 @@
-<div align="center"><img src="https://raw.githubusercontent.com/vUnkname/Password-Generator/main/screenshot.png"></div>
+<div align="center"><img src="https://raw.githubusercontent.com/vUnkname/Password-Generator/master/screenshot.png"></div>
 <br>
 
 # Password Generator - Chrome Extension
