@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
   fetchSponsorMessage();
   
   function fetchSponsorMessage() {
-    fetch('https://raw.githubusercontent.com/vUnkname/Password-Generator/main/assets/sponsor-messsage.json')
+    fetch('https://raw.githubusercontent.com/vUnkname/Password-Generator/master/assets/sponsor-messsage.json')
       .then(response => response.text())
       .then(text => {
         // Only display if content is not empty
