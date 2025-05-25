@@ -1,93 +1,250 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="popup.css">
+  <title>NetPass Toolkit</title>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
 </head>
+
 <body>
   <div class="container">
-    <div class="password-display">
-      <span id="password-text"></span>
-      <button id="refresh-password" class="icon-button" title="Regenerate Password">🔄</button>
-      <button id="copy-password-small" class="icon-button" title="Copy to Clipboard">📋</button>
+    <div class="tab-container">
+      <div class="tabs">
+        <button class="tab-button active" data-tab="password-tab">
+          Password / String
+        </button>
+        <button class="tab-button" data-tab="network-tab">
+          Network Tools
+        </button>
+      </div>
+
+      <div id="password-tab" class="tab-content active">
+        <div class="customize-section">
+          <h2>Customize your password</h2>
+
+          <div class="password-display">
+            <span id="password-text"></span>
+            <button id="refresh-password" class="icon-button" title="Regenerate Password">
+              🔄
+            </button>
+            <button id="copy-password-small" class="icon-button" title="Copy to Clipboard">
+              📋
+            </button>
+          </div>
+
+          <div class="option-row">
+            <label>Password Length</label>
+            <input type="number" id="password-length" min="1" max="100" value="20" />
+          </div>
+
+          <div class="slider-container">
+            <input type="range" id="length-slider" min="1" max="100" value="20" />
+          </div>
+
+          <div class="option-columns">
+            <div class="option-column">
+              <div class="option-row">
+                <input type="radio" id="easy-to-say" name="character-set" value="easy-to-say" />
+                <label for="easy-to-say">Easy to say</label>
+                <span class="info-icon"
+                  tooltip-title="Avoids numbers and special characters for easier verbal communication">ℹ️</span>
+              </div>
+
+              <div class="option-row">
+                <input type="radio" id="easy-to-read" name="character-set" value="easy-to-read" />
+                <label for="easy-to-read">Easy to read</label>
+                <span class="info-icon"
+                  tooltip-title="Avoids ambiguous characters like l, 1, I, O, 0 that can be confused with each other">ℹ️</span>
+              </div>
+
+              <div class="option-row">
+                <input type="radio" id="all-characters" name="character-set" value="all-characters" checked />
+                <label for="all-characters">All characters</label>
+                <span class="info-icon"
+                  tooltip-title="Uses all character types for maximum security and entropy">ℹ️</span>
+              </div>
+
+              <div class="option-row">
+                <input type="radio" id="uuid" name="character-set" value="uuid" />
+                <label for="uuid">Generate UUID</label>
+                <span class="info-icon"
+                  tooltip-title="Generates a standard UUID (Universally Unique Identifier) in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">ℹ️</span>
+              </div>
+            </div>
+
+            <div class="option-column">
+              <div class="option-row">
+                <input type="checkbox" id="uppercase" checked />
+                <label for="uppercase">Uppercase</label>
+              </div>
+
+              <div class="option-row">
+                <input type="checkbox" id="lowercase" checked />
+                <label for="lowercase">Lowercase</label>
+              </div>
+
+              <div class="option-row">
+                <input type="checkbox" id="numbers" checked />
+                <label for="numbers">Numbers</label>
+              </div>
+
+              <div class="option-row">
+                <input type="checkbox" id="symbols" checked />
+                <label for="symbols">Symbols</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="github-link">
+            <a href="https://github.com/vUnkname" target="_blank">
+              <svg height="24" width="24" viewBox="0 0 16 16" version="1.1">
+                <path fill-rule="evenodd"
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                </path>
+              </svg>
+            </a>
+          </div>
+          <button id="copy-password" class="copy-button">Copy password</button>
+        </div>
+      </div>
+
+      <div id="network-tab" class="tab-content">
+        <div class="customize-section">
+          <!-- Port Generator Section -->
+          <div class="network-section">
+            <h3>Random Port Generator</h3>
+            <div class="option-row">
+              <label>Port Range:</label>
+              <input type="number" id="port-min" min="1" max="65535" value="1" class="small-input" />
+              <span>to</span>
+              <input type="number" id="port-max" min="1" max="65535" value="65535" class="small-input" />
+            </div>
+            <div class="result-display">
+              <span id="port-result"></span>
+              <button id="generate-port" class="generate-button">
+                Generate Port
+              </button>
+              <button id="copy-port" class="copy-small-button">Copy</button>
+            </div>
+          </div>
+
+          <!-- IPv4 Generator Section -->
+          <div class="network-section">
+            <h3>Local IPv4 Generator</h3>
+            <div class="option-row">
+              <label>IP Range:</label>
+              <select id="ipv4-class">
+                <option value="A">Class A (10.0.0.0/8)</option>
+                <option value="B">Class B (172.16.0.0/12)</option>
+                <option value="C" selected>Class C (192.168.0.0/16)</option>
+              </select>
+            </div>
+            <div class="result-display">
+              <span id="ipv4-result"></span>
+              <button id="generate-ipv4" class="generate-button">
+                Generate IPv4
+              </button>
+              <button id="copy-ipv4" class="copy-small-button">Copy</button>
+            </div>
+          </div>
+
+          <!-- IPv6 Generator Section -->
+          <div class="network-section">
+            <h3>Local IPv6 Generator</h3>
+            <div class="option-row">
+              <label>Type:</label>
+              <select id="ipv6-type">
+                <option value="simple">Simple</option>
+                <option value="unique-local" selected>
+                  Unique Local (RFC 4193)
+                </option>
+              </select>
+              <span class="info-icon"
+                tooltip-title="Simple generates basic addresses with selected prefix. Unique Local follows RFC 4193 standard with Global ID, Subnet ID, and Interface ID">ℹ️</span>
+            </div>
+            <div class="option-row ipv6-simple-options">
+              <label>Prefix:</label>
+              <select id="ipv6-prefix">
+                <option value="fd00" selected>fd00::/8 (Unique Local)</option>
+                <option value="fe80">fe80::/10 (Link Local)</option>
+              </select>
+            </div>
+            <div class="option-row ipv6-unique-options">
+              <input type="checkbox" id="ipv6-manual-mode" />
+              <label for="ipv6-manual-mode">Manual Mode</label>
+              <span class="info-icon"
+                tooltip-title="When disabled, automatically generates the Global ID and Subnet ID and shows the network prefix only">ℹ️</span>
+            </div>
+            <div class="option-row ipv6-manual-fields">
+              <label>Global ID:</label>
+              <input type="text" id="ipv6-global-id" value="" placeholder="auto" class="medium-input" />
+              <label>Subnet ID:</label>
+              <input type="text" id="ipv6-subnet-id" value="0000" maxlength="4" class="small-input" />
+            </div>
+            <div class="result-display">
+              <span id="ipv6-result"></span>
+              <button id="generate-ipv6" class="generate-button">
+                Generate IPv6
+              </button>
+              <button id="copy-ipv6" class="copy-small-button">Copy</button>
+            </div>
+          </div>
+
+          <!-- MAC Address Generator (Collapsible) -->
+          <div class="network-section collapsible-section">
+            <h3 class="collapsible-header">
+              <span class="toggle-icon">▶</span> MAC Address Generator
+            </h3>
+            <div class="collapsible-content" style="display: none;">
+            <div class="option-row">
+              <label>Format:</label>
+              <select id="mac-format">
+                <option value="colon" selected>
+                  Colon (00:00:00:00:00:00)
+                </option>
+                <option value="dash">Dash (00-00-00-00-00-00)</option>
+                <option value="dot">Dot (0000.0000.0000)</option>
+              </select>
+            </div>
+            <div class="option-row">
+              <label>Vendor Prefix:</label>
+              <select id="mac-vendor">
+                <option value="random" selected>Random</option>
+                <option value="apple">Apple</option>
+                <option value="cisco">Cisco</option>
+                <option value="dell">Dell</option>
+                <option value="intel">Intel</option>
+                <option value="microsoft">Microsoft</option>
+                <option value="samsung">Samsung</option>
+                <option value="sony">Sony</option>
+                <option value="netgear">Netgear</option>
+                <option value="tp-link">TP-Link</option>
+                <option value="huawei">Huawei</option>
+              </select>
+              <span class="info-icon"
+                tooltip-title="Generates a MAC address starting with the selected vendor's Organizationally Unique Identifier (OUI)">ℹ️</span>
+            </div>
+            <div class="result-display">
+              <span id="mac-result"></span>
+              <button id="generate-mac" class="generate-button">
+                Generate MAC
+              </button>
+              <button id="copy-mac" class="copy-small-button">Copy</button>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="customize-section">
-      <h2>Customize your password</h2>
-      
-      <div class="option-row">
-        <label>Password Length</label>
-        <input type="number" id="password-length" min="1" max="100" value="20">
-      </div>
-      
-      <div class="slider-container">
-        <input type="range" id="length-slider" min="1" max="100" value="20">
-      </div>
-      
-      <div class="option-columns">
-        <div class="option-column">
-          <div class="option-row">
-            <input type="radio" id="easy-to-say" name="character-set" value="easy-to-say">
-            <label for="easy-to-say">Easy to say</label>
-            <span class="info-icon" tooltip-title="Avoids numbers and special characters for easier verbal communication">ℹ️</span>
-          </div>
-          
-          <div class="option-row">
-            <input type="radio" id="easy-to-read" name="character-set" value="easy-to-read">
-            <label for="easy-to-read">Easy to read</label>
-            <span class="info-icon" tooltip-title="Avoids ambiguous characters like l, 1, I, O, 0 that can be confused with each other">ℹ️</span>
-          </div>
-          
-          <div class="option-row">
-            <input type="radio" id="all-characters" name="character-set" value="all-characters" checked>
-            <label for="all-characters">All characters</label>
-            <span class="info-icon" tooltip-title="Uses all character types for maximum security and entropy">ℹ️</span>
-          </div>
-          
-          <div class="option-row">
-            <input type="radio" id="uuid" name="character-set" value="uuid">
-            <label for="uuid">Generate UUID</label>
-            <span class="info-icon" tooltip-title="Generates a standard UUID (Universally Unique Identifier) in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">ℹ️</span>
-          </div>
-        </div>
-        
-        <div class="option-column">
-          <div class="option-row">
-            <input type="checkbox" id="uppercase" checked>
-            <label for="uppercase">Uppercase</label>
-          </div>
-          
-          <div class="option-row">
-            <input type="checkbox" id="lowercase" checked>
-            <label for="lowercase">Lowercase</label>
-          </div>
-          
-          <div class="option-row">
-            <input type="checkbox" id="numbers" checked>
-            <label for="numbers">Numbers</label>
-          </div>
-          
-          <div class="option-row">
-            <input type="checkbox" id="symbols" checked>
-            <label for="symbols">Symbols</label>
-          </div>
-        </div>
-      </div>
-      
-      <div class="github-link">
-        <a href="https://github.com/vUnkname" target="_blank">
-          <svg height="24" width="24" viewBox="0 0 16 16" version="1.1">
-            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-    
-    <button id="copy-password" class="copy-button">Copy password</button>
-    
     <div id="sponsor-message" class="sponsor-section"></div>
   </div>
-  
+
+  <!-- Dedicated tooltip container at the bottom of the page -->
+  <div id="tooltip-container" class="tooltip-container"></div>
+
   <script src="popup.js"></script>
 </body>
-</html> 
+
+</html>

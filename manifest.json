@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Password Generator",
-  "version": "1.0",
-  "description": "Generate secure random passwords with customizable options",
+  "name": "NetPass Toolkit",
+  "version": "2.0",
+  "description": "Generate secure passwords and network identifiers with customizable options",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
