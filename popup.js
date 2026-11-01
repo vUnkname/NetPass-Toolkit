@@ -504,6 +504,442 @@ document.addEventListener('DOMContentLoaded', function() {
     macResult.textContent = mac;
   }
   
+  // String Length Counter
+  const strlenInput = document.getElementById('strlen-input');
+  const strlenTelegramMode = document.getElementById('strlen-telegram-mode');
+  const strlenCodepoints = document.getElementById('strlen-codepoints');
+  const strlenUtf16 = document.getElementById('strlen-utf16');
+  const strlenUtf8 = document.getElementById('strlen-utf8');
+  const strlenGraphemes = document.getElementById('strlen-graphemes');
+  const strlenLines = document.getElementById('strlen-lines');
+  const strlenWords = document.getElementById('strlen-words');
+  const strlenScriptInfo = document.getElementById('strlen-script-info');
+  const strlenTelegramInfo = document.getElementById('strlen-telegram-info');
+  const strlenStats = document.querySelectorAll('.strlen-stat');
+
+  const PERSIAN_ARABIC_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const LATIN_REGEX = /[a-zA-Z]/;
+  const EMOJI_REGEX = /\p{Extended_Pictographic}/u;
+  const graphemeSegmenter = typeof Intl !== 'undefined' && Intl.Segmenter
+    ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+    : null;
+
+  strlenInput.addEventListener('input', updateStrlen);
+  strlenTelegramMode.addEventListener('change', updateStrlen);
+
+  function countCodePoints(text) {
+    return [...text].length;
+  }
+
+  function countUtf16Units(text) {
+    let count = 0;
+    for (let i = 0; i < text.length; i++) {
+      const code = text.charCodeAt(i);
+      if (code >= 0xD800 && code <= 0xDBFF) {
+        count += 2;
+        i++;
+      } else {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  function countUtf8Bytes(text) {
+    return new TextEncoder().encode(text).length;
+  }
+
+  function countGraphemes(text) {
+    if (graphemeSegmenter) {
+      return [...graphemeSegmenter.segment(text)].length;
+    }
+    return countCodePoints(text);
+  }
+
+  function countWords(text) {
+    const trimmed = text.trim();
+    if (!trimmed) return 0;
+    return trimmed.split(/\s+/).length;
+  }
+
+  function countEmojis(text) {
+    const matches = text.match(new RegExp(EMOJI_REGEX.source, 'gu'));
+    return matches ? matches.length : 0;
+  }
+
+  function countEmojiUtf16Units(text) {
+    let count = 0;
+    const emojiRegex = new RegExp(EMOJI_REGEX.source, 'gu');
+    let match;
+    while ((match = emojiRegex.exec(text)) !== null) {
+      count += countUtf16Units(match[0]);
+    }
+    return count;
+  }
+
+  function detectScriptInfo(text) {
+    const hasPersianArabic = PERSIAN_ARABIC_REGEX.test(text);
+    const hasLatin = LATIN_REGEX.test(text);
+    const persianArabicCount = (text.match(new RegExp(PERSIAN_ARABIC_REGEX.source, 'g')) || []).length;
+    const latinCount = (text.match(new RegExp(LATIN_REGEX.source, 'g')) || []).length;
+
+    if (!hasPersianArabic && !hasLatin) {
+      return null;
+    }
+
+    let scriptLabel = '';
+    if (hasPersianArabic && hasLatin) {
+      scriptLabel = persianArabicCount >= latinCount ? 'Mixed (Persian/Arabic dominant)' : 'Mixed (Latin dominant)';
+    } else if (hasPersianArabic) {
+      scriptLabel = 'Persian / Arabic (RTL)';
+    } else {
+      scriptLabel = 'Latin (LTR)';
+    }
+
+    const utf8PerChar = hasPersianArabic && !hasLatin
+      ? 'Persian/Arabic chars use ~2 bytes each in UTF-8'
+      : hasPersianArabic
+        ? 'Persian/Arabic chars use ~2 bytes, ASCII uses 1 byte in UTF-8'
+        : null;
+
+    return { scriptLabel, utf8Note: utf8PerChar, isRtl: hasPersianArabic && persianArabicCount >= latinCount };
+  }
+
+  function updateStrlen() {
+    const text = strlenInput.value;
+    const codePoints = countCodePoints(text);
+    const utf16Units = countUtf16Units(text);
+    const utf8Bytes = countUtf8Bytes(text);
+    const graphemes = countGraphemes(text);
+    const lines = text ? text.split('\n').length : 0;
+    const words = countWords(text);
+
+    strlenCodepoints.textContent = codePoints;
+    strlenUtf16.textContent = utf16Units;
+    strlenUtf8.textContent = utf8Bytes;
+    strlenGraphemes.textContent = graphemes;
+    strlenLines.textContent = lines;
+    strlenWords.textContent = words;
+
+    strlenStats.forEach(stat => stat.classList.remove('highlight'));
+
+    const scriptInfo = detectScriptInfo(text);
+    if (scriptInfo) {
+      strlenScriptInfo.classList.add('visible');
+      strlenScriptInfo.textContent = scriptInfo.utf8Note
+        ? `${scriptInfo.scriptLabel} — ${scriptInfo.utf8Note}`
+        : scriptInfo.scriptLabel;
+      strlenInput.classList.toggle('rtl-text', scriptInfo.isRtl);
+    } else {
+      strlenScriptInfo.classList.remove('visible');
+      strlenInput.classList.remove('rtl-text');
+    }
+
+    if (strlenTelegramMode.checked) {
+      strlenTelegramInfo.style.display = 'block';
+      const emojiCount = countEmojis(text);
+      const emojiUtf16 = countEmojiUtf16Units(text);
+      const isOverLimit = codePoints > 4096;
+      const remaining = 4096 - codePoints;
+
+      strlenTelegramInfo.innerHTML =
+        `<div class="telegram-limit${isOverLimit ? ' over-limit' : ''}">` +
+        `Message: ${codePoints} / 4096` +
+        `${isOverLimit ? ' (over limit!)' : ` (${remaining} remaining)`}` +
+        `</div>` +
+        `<div class="telegram-detail">` +
+        `UTF-16 units (for formatting/entities): ${utf16Units}` +
+        (emojiCount > 0 ? `<br>Emojis: ${emojiCount} (${emojiUtf16} UTF-16 units)` : '') +
+        `<br>Persian/Arabic chars count as 1 code point and 1 UTF-16 unit each` +
+        `</div>`;
+
+      document.querySelector('.strlen-stat:nth-child(1)').classList.add('highlight');
+      document.querySelector('.strlen-stat:nth-child(2)').classList.add('highlight');
+    } else {
+      strlenTelegramInfo.style.display = 'none';
+    }
+  }
+
+  updateStrlen();
+
+  // Data Size Converter
+  const dataConvertInput = document.getElementById('data-convert-input');
+  const dataConvertFrom = document.getElementById('data-convert-from');
+  const dataConvertTo = document.getElementById('data-convert-to');
+  const dataConvertOutput = document.getElementById('data-convert-output');
+  const dataConvertText = document.getElementById('data-convert-text');
+  const copyDataConvertButton = document.getElementById('copy-data-convert');
+
+  const DATA_UNIT_BYTES = {
+    B: 1,
+    KB: 1024,
+    MB: 1024 ** 2,
+    GB: 1024 ** 3,
+    TB: 1024 ** 4,
+    PB: 1024 ** 5
+  };
+
+  const DATA_UNIT_LABELS = {
+    B: 'Bytes (B)',
+    KB: 'Kilobytes (KB)',
+    MB: 'Megabytes (MB)',
+    GB: 'Gigabytes (GB)',
+    TB: 'Terabytes (TB)',
+    PB: 'Petabytes (PB)'
+  };
+
+  dataConvertInput.addEventListener('input', updateDataConverter);
+  dataConvertFrom.addEventListener('change', updateDataConverter);
+  dataConvertTo.addEventListener('change', updateDataConverter);
+  copyDataConvertButton.addEventListener('click', () => {
+    if (dataConvertOutput.value) {
+      navigator.clipboard.writeText(dataConvertOutput.value).then(() => {
+        const originalText = copyDataConvertButton.textContent;
+        copyDataConvertButton.textContent = 'Copied!';
+        setTimeout(() => {
+          copyDataConvertButton.textContent = originalText;
+        }, 1500);
+      }).catch(err => {
+        console.error('Error copying text: ', err);
+      });
+    }
+  });
+
+  function parseDataValue(str) {
+    const cleaned = str.trim().replace(/,/g, '');
+    if (!cleaned) return null;
+    const num = Number(cleaned);
+    if (!isFinite(num)) return null;
+    return num;
+  }
+
+  function formatDataNumber(num) {
+    if (num === 0) return '0';
+    const abs = Math.abs(num);
+    if (abs >= 1e18) return num.toExponential(4);
+    if (abs >= 1000) {
+      return num.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    }
+    if (abs >= 1) {
+      return num.toLocaleString('en-US', { maximumFractionDigits: 4, minimumFractionDigits: 0 });
+    }
+    if (abs >= 0.000001) {
+      return num.toLocaleString('en-US', { maximumFractionDigits: 8, minimumFractionDigits: 0 });
+    }
+    return num.toExponential(4);
+  }
+
+  function getUnitLabel(unit) {
+    return DATA_UNIT_LABELS[unit] || unit;
+  }
+
+  function updateDataConverter() {
+    const value = parseDataValue(dataConvertInput.value);
+    const fromUnit = dataConvertFrom.value;
+    const toUnit = dataConvertTo.value;
+
+    if (value === null) {
+      dataConvertOutput.value = '';
+      dataConvertText.textContent = '';
+      return;
+    }
+
+    const bytes = value * DATA_UNIT_BYTES[fromUnit];
+    const result = bytes / DATA_UNIT_BYTES[toUnit];
+    const formattedInput = formatDataNumber(value);
+    const formattedResult = formatDataNumber(result);
+
+    dataConvertOutput.value = formattedResult;
+    dataConvertText.textContent =
+      `${formattedInput} ${getUnitLabel(fromUnit)} = ${formattedResult} ${getUnitLabel(toUnit)}`;
+  }
+
+  // Timestamp Converter
+  const timestampInput = document.getElementById('timestamp-input');
+  const timestampUnitDetected = document.getElementById('timestamp-unit-detected');
+  const timestampGregorian = document.getElementById('timestamp-gregorian');
+  const timestampShamsiText = document.getElementById('timestamp-shamsi-text');
+  const timestampShamsiIso = document.getElementById('timestamp-shamsi-iso');
+
+  const gregorianFormatter = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  const shamsiFormatter = new Intl.DateTimeFormat('fa-IR', {
+    calendar: 'persian',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  const shamsiIsoFormatter = new Intl.DateTimeFormat('fa-IR', {
+    calendar: 'persian',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'UTC'
+  });
+
+  timestampInput.addEventListener('input', updateTimestampConverter);
+
+  function parseTimestampValue(str) {
+    const cleaned = str.trim().replace(/,/g, '');
+    if (!cleaned) return null;
+
+    const num = Number(cleaned);
+    if (!isFinite(num) || num < 0) return null;
+
+    const isMilliseconds = cleaned.length >= 13 || num >= 1e12;
+    const ms = isMilliseconds ? num : num * 1000;
+    const date = new Date(ms);
+
+    if (isNaN(date.getTime())) return null;
+
+    return {
+      raw: num,
+      ms,
+      unit: isMilliseconds ? 'milliseconds' : 'seconds',
+      date
+    };
+  }
+
+  function formatGregorian(date) {
+    return gregorianFormatter.format(date);
+  }
+
+  function formatShamsiText(date) {
+    try {
+      const parts = shamsiFormatter.formatToParts(date);
+      const getPart = (type) => parts.find(part => part.type === type)?.value || '';
+
+      const weekday = normalizePersianWeekday(getPart('weekday'));
+      const day = getPart('day');
+      const month = getPart('month');
+      const year = getPart('year');
+      const hour = getPart('hour');
+      const minute = getPart('minute');
+      const second = getPart('second');
+      const daySuffix = getPersianDaySuffix(day);
+
+      return `${weekday}، ${day}${daySuffix} ${month} ${year}، ساعت ${hour}:${minute}:${second}`;
+    } catch (error) {
+      return 'Persian calendar not supported in this browser';
+    }
+  }
+
+  function formatShamsiIso(date) {
+    const parts = shamsiIsoFormatter.formatToParts(date);
+    const getPart = (type) => toLatinDigits(parts.find(part => part.type === type)?.value || '');
+    const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+
+    return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}:${getPart('second')}.${milliseconds}Z`;
+  }
+
+  function getPersianDaySuffix(dayStr) {
+    const dayNum = parseInt(toLatinDigits(dayStr), 10);
+    if (dayNum >= 1 && dayNum <= 9) return 'م';
+    return 'ام';
+  }
+
+  function toLatinDigits(str) {
+    return str.replace(/[۰-۹]/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(digit));
+  }
+
+  function normalizePersianWeekday(weekday) {
+    return weekday
+      .replace('پنجشنبه', 'پنج\u200Cشنبه')
+      .replace('سهشنبه', 'سه\u200Cشنبه')
+      .replace('چهارشنبه', 'چهار\u200Cشنبه');
+  }
+
+  function updateTimestampConverter() {
+    const parsed = parseTimestampValue(timestampInput.value);
+
+    if (!parsed) {
+      timestampUnitDetected.textContent = '';
+      timestampGregorian.textContent = '';
+      timestampShamsiText.textContent = '';
+      timestampShamsiIso.textContent = '';
+      return;
+    }
+
+    const gregorian = formatGregorian(parsed.date);
+    const shamsiText = formatShamsiText(parsed.date);
+    const iso = parsed.date.toISOString();
+
+    timestampUnitDetected.textContent = `Detected: ${parsed.unit} (${parsed.raw.toLocaleString('en-US')})`;
+    timestampGregorian.textContent = `${gregorian}\n${iso} UTC`;
+    timestampShamsiText.textContent = shamsiText;
+    timestampShamsiIso.textContent = `${formatShamsiIso(parsed.date)} UTC`;
+  }
+
+  // Percentage Calculator
+  const percentValue = document.getElementById('percent-value');
+  const percentBase = document.getElementById('percent-base');
+  const percentResult = document.getElementById('percent-result');
+  const percentRemaining = document.getElementById('percent-remaining');
+  const percentText = document.getElementById('percent-text');
+
+  percentValue.addEventListener('input', updatePercentCalculator);
+  percentBase.addEventListener('input', updatePercentCalculator);
+
+  function parsePercentNumber(str) {
+    const cleaned = str.trim().replace(/,/g, '');
+    if (!cleaned) return null;
+    const num = Number(cleaned);
+    if (!isFinite(num)) return null;
+    return num;
+  }
+
+  function formatPercentNumber(num) {
+    if (num === 0) return '0';
+    const abs = Math.abs(num);
+    if (abs >= 1000) {
+      return num.toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+    }
+    if (abs >= 1) {
+      return num.toLocaleString('en-US', { maximumFractionDigits: 4, minimumFractionDigits: 0 });
+    }
+    return num.toLocaleString('en-US', { maximumFractionDigits: 8, minimumFractionDigits: 0 });
+  }
+
+  function updatePercentCalculator() {
+    const percent = parsePercentNumber(percentValue.value);
+    const base = parsePercentNumber(percentBase.value);
+
+    if (percent === null || base === null) {
+      percentResult.textContent = '—';
+      percentRemaining.textContent = '—';
+      percentText.textContent = '';
+      return;
+    }
+
+    const result = (percent / 100) * base;
+    const remaining = base - result;
+
+    percentResult.textContent = formatPercentNumber(result);
+    percentRemaining.textContent = formatPercentNumber(remaining);
+    percentText.textContent =
+      `${formatPercentNumber(percent)}% of ${formatPercentNumber(base)} = ${formatPercentNumber(result)}; ` +
+      `remaining: ${formatPercentNumber(remaining)}`;
+  }
+
   // Generic function to copy text
   function copyText(element, button) {
     const text = element.textContent;

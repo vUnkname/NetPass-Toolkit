@@ -18,6 +18,9 @@
         <button class="tab-button" data-tab="network-tab">
           Network Tools
         </button>
+        <button class="tab-button" data-tab="numbers-tab">
+          Numbers
+        </button>
       </div>
 
       <div id="password-tab" class="tab-content active">
@@ -107,6 +110,54 @@
             </a>
           </div>
           <button id="copy-password" class="copy-button">Copy password</button>
+
+          <div class="section-divider"></div>
+
+          <!-- String Length Counter Section (Collapsible) -->
+          <div class="network-section collapsible-section">
+            <h3 class="collapsible-header">
+              <span class="toggle-icon">▶</span> String Length (strlen)
+            </h3>
+            <div class="collapsible-content" style="display: none;">
+              <div class="option-row strlen-input-row">
+                <textarea id="strlen-input" rows="4" placeholder="Enter text to analyze..."></textarea>
+              </div>
+              <div class="option-row">
+                <input type="checkbox" id="strlen-telegram-mode" />
+                <label for="strlen-telegram-mode">Telegram counting mode</label>
+                <span class="info-icon"
+                  tooltip-title="Telegram uses Unicode code points for the 4096 message limit, but UTF-16 code units for formatting entities. Emojis and supplementary characters count as 2 UTF-16 units.">ℹ️</span>
+              </div>
+              <div id="strlen-results" class="strlen-results">
+                <div class="strlen-stat">
+                  <span class="strlen-label">Code Points</span>
+                  <span id="strlen-codepoints" class="strlen-value">0</span>
+                </div>
+                <div class="strlen-stat">
+                  <span class="strlen-label">UTF-16 Units</span>
+                  <span id="strlen-utf16" class="strlen-value">0</span>
+                </div>
+                <div class="strlen-stat">
+                  <span class="strlen-label">UTF-8 Bytes</span>
+                  <span id="strlen-utf8" class="strlen-value">0</span>
+                </div>
+                <div class="strlen-stat">
+                  <span class="strlen-label">Graphemes</span>
+                  <span id="strlen-graphemes" class="strlen-value">0</span>
+                </div>
+                <div class="strlen-stat">
+                  <span class="strlen-label">Lines</span>
+                  <span id="strlen-lines" class="strlen-value">0</span>
+                </div>
+                <div class="strlen-stat">
+                  <span class="strlen-label">Words</span>
+                  <span id="strlen-words" class="strlen-value">0</span>
+                </div>
+              </div>
+              <div id="strlen-script-info" class="strlen-script-info"></div>
+              <div id="strlen-telegram-info" class="strlen-telegram-info" style="display: none;"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -233,6 +284,103 @@
               </button>
               <button id="copy-mac" class="copy-small-button">Copy</button>
             </div>
+            </div>
+          </div>
+
+          <!-- Data Size Converter (Collapsible) -->
+          <div class="network-section collapsible-section">
+            <h3 class="collapsible-header">
+              <span class="toggle-icon">▶</span> Data Size Converter
+            </h3>
+            <div class="collapsible-content" style="display: none;">
+            <div class="data-converter-row">
+              <input type="text" id="data-convert-input" class="data-convert-input" placeholder="Enter value..." />
+              <select id="data-convert-from" class="data-convert-unit">
+                <option value="B" selected>Bytes (B)</option>
+                <option value="KB">Kilobytes (KB)</option>
+                <option value="MB">Megabytes (MB)</option>
+                <option value="GB">Gigabytes (GB)</option>
+                <option value="TB">Terabytes (TB)</option>
+                <option value="PB">Petabytes (PB)</option>
+              </select>
+              <span class="data-convert-arrow">→</span>
+              <select id="data-convert-to" class="data-convert-unit">
+                <option value="B">Bytes (B)</option>
+                <option value="KB">Kilobytes (KB)</option>
+                <option value="MB">Megabytes (MB)</option>
+                <option value="GB" selected>Gigabytes (GB)</option>
+                <option value="TB">Terabytes (TB)</option>
+                <option value="PB">Petabytes (PB)</option>
+              </select>
+              <input type="text" id="data-convert-output" class="data-convert-output" readonly placeholder="Result" />
+            </div>
+            <div class="result-display">
+              <span id="data-convert-text" class="data-convert-text"></span>
+              <button id="copy-data-convert" class="copy-small-button">Copy</button>
+            </div>
+            <div class="option-row data-converter-note">
+              <span class="info-icon"
+                tooltip-title="Uses binary units (1 KB = 1024 B). Panels like 3x-ui report traffic in raw bytes.">ℹ️</span>
+              <label>Binary conversion (1024-based)</label>
+            </div>
+            </div>
+          </div>
+
+          <!-- Timestamp Converter (Collapsible) -->
+          <div class="network-section collapsible-section">
+            <h3 class="collapsible-header">
+              <span class="toggle-icon">▶</span> Timestamp Converter
+            </h3>
+            <div class="collapsible-content" style="display: none;">
+            <div class="option-row timestamp-input-row">
+              <input type="text" id="timestamp-input" class="timestamp-input" placeholder="e.g. 1786972570495 or 1786972570" />
+            </div>
+            <div id="timestamp-unit-detected" class="timestamp-unit-detected"></div>
+            <div class="timestamp-results">
+              <div class="timestamp-result-row timestamp-shamsi-row" dir="rtl" lang="fa">
+                <span class="timestamp-label">Persian (Shamsi)</span>
+                <div id="timestamp-shamsi" class="timestamp-value timestamp-value-shamsi">
+                  <div id="timestamp-shamsi-text" class="timestamp-shamsi-text"></div>
+                  <div id="timestamp-shamsi-iso" class="timestamp-shamsi-iso"></div>
+                </div>
+              </div>
+              <div class="timestamp-result-row">
+                <span class="timestamp-label">Gregorian (Miladi)</span>
+                <span id="timestamp-gregorian" class="timestamp-value"></span>
+              </div>
+            </div>
+            <div class="option-row timestamp-note">
+              <span class="info-icon"
+                tooltip-title="Values with 13+ digits are treated as milliseconds. Shorter values are treated as Unix seconds.">ℹ️</span>
+              <label>Auto-detects seconds vs milliseconds</label>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="numbers-tab" class="tab-content">
+        <div class="customize-section">
+          <div class="network-section">
+            <h3>Percentage Calculator</h3>
+            <div class="percent-calculator-row">
+              <input type="text" id="percent-value" class="percent-input" placeholder="30" />
+              <span class="percent-symbol">%</span>
+              <span class="percent-of-label">of</span>
+              <input type="text" id="percent-base" class="percent-input" placeholder="500" />
+            </div>
+            <div class="percent-results">
+              <div class="percent-stat">
+                <span class="percent-stat-label">Result</span>
+                <span id="percent-result" class="percent-stat-value">—</span>
+              </div>
+              <div class="percent-stat">
+                <span class="percent-stat-label">Remaining</span>
+                <span id="percent-remaining" class="percent-stat-value">—</span>
+              </div>
+            </div>
+            <div class="result-display percent-text-display">
+              <span id="percent-text" class="percent-text"></span>
             </div>
           </div>
         </div>

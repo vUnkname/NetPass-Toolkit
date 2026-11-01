@@ -22,11 +22,11 @@ body {
 
 .tab-button {
   flex: 1;
-  padding: 12px;
+  padding: 12px 8px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   color: #666;
   border-bottom: 2px solid #f8f9fa;
 }
@@ -362,6 +362,11 @@ label {
   background-color: #bd2130;
 }
 
+.section-divider {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+}
+
 /* GitHub link styles */
 .github-link {
   position: absolute;
@@ -398,4 +403,351 @@ label {
 
 .sponsor-section a:hover {
   text-decoration: underline;
+}
+
+/* String length counter styles */
+.strlen-input-row {
+  display: block;
+}
+
+#strlen-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  min-height: 80px;
+}
+
+#strlen-input:focus {
+  outline: none;
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15);
+}
+
+#strlen-input.rtl-text {
+  direction: rtl;
+  text-align: right;
+}
+
+.strlen-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.strlen-stat {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.strlen-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.strlen-value {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: monospace;
+  color: #333;
+}
+
+.strlen-stat.highlight .strlen-value {
+  color: #dc3545;
+}
+
+.strlen-script-info {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #e8f4fd;
+  border: 1px solid #b8daff;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #004085;
+  display: none;
+}
+
+.strlen-script-info.visible {
+  display: block;
+}
+
+.strlen-telegram-info {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #856404;
+}
+
+.strlen-telegram-info .telegram-limit {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.strlen-telegram-info .telegram-limit.over-limit {
+  color: #dc3545;
+}
+
+.strlen-telegram-info .telegram-detail {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Data size converter styles */
+.data-converter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.data-convert-input,
+.data-convert-output {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.data-convert-input:focus {
+  outline: none;
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15);
+}
+
+.data-convert-output {
+  background-color: #f8f9fa;
+  color: #444;
+  font-weight: bold;
+}
+
+.data-convert-unit {
+  padding: 7px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background-color: white;
+  cursor: pointer;
+  max-width: 130px;
+}
+
+.data-convert-arrow {
+  color: #666;
+  font-size: 16px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.data-convert-text {
+  font-size: 13px;
+  color: #333;
+  font-weight: normal;
+}
+
+.data-converter-note {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.data-converter-note label {
+  flex-grow: 0;
+  margin-left: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Timestamp converter styles */
+.timestamp-input-row {
+  display: block;
+}
+
+.timestamp-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.timestamp-input:focus {
+  outline: none;
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15);
+}
+
+.timestamp-unit-detected {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 10px;
+  min-height: 16px;
+}
+
+.timestamp-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.timestamp-result-row {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.timestamp-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.timestamp-value {
+  display: block;
+  font-family: monospace;
+  font-size: 14px;
+  color: #333;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+.timestamp-shamsi-row {
+  direction: rtl;
+  text-align: right;
+}
+
+.timestamp-shamsi-row .timestamp-label {
+  text-align: right;
+}
+
+.timestamp-value-shamsi {
+  font-family: 'vazir','Vazir',Tahoma, Arial, sans-serif !important;
+  direction: rtl;
+  text-align: right;
+  unicode-bidi: plaintext;
+  white-space: normal;
+}
+
+.timestamp-shamsi-iso {
+  font-family: monospace;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+.timestamp-note {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.timestamp-note label {
+  flex-grow: 0;
+  margin-left: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Percentage calculator styles */
+.percent-calculator-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.percent-input {
+  flex: 1;
+  min-width: 70px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.percent-input:focus {
+  outline: none;
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15);
+}
+
+.percent-symbol {
+  font-weight: bold;
+  color: #666;
+}
+
+.percent-of-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.percent-results {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.percent-stat {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+
+.percent-stat-label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.percent-stat-value {
+  display: block;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.percent-text-display {
+  margin-top: 0;
+}
+
+.percent-text {
+  font-size: 13px;
+  color: #333;
+  font-weight: normal;
 } 
